@@ -30,14 +30,14 @@ const Feed = () => {
   
   const feedPosts = getFeedPosts();
   
-  // Function to handle manual refresh
-  const handleRefresh = async () => {
-    setIsRefreshing(true);
-    await refreshData();
-    setLastRefreshed(new Date());
-    setIsRefreshing(false);
-  };
-  
+ 
+const handleRefresh = useCallback(async () => {
+  setIsRefreshing(true);
+  await refreshData();
+  setLastRefreshed(new Date());
+  setIsRefreshing(false);
+}, [refreshData]);
+
   // Auto-refresh the feed every minute
   useEffect(() => {
     const interval = setInterval(() => {
