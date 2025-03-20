@@ -1,7 +1,7 @@
 import React, { createContext, useState, useEffect, useContext } from 'react';
 import apiService from '../services/api';
 
-// Generate random avatar URL
+
 const getRandomAvatar = (id) => {
   return `https://i.pravatar.cc/150?img=${id % 70}`;
 };
@@ -14,23 +14,23 @@ export const DataProvider = ({ children }) => {
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
   
-  // Load initial data
+
   useEffect(() => {
     const fetchInitialData = async () => {
       try {
         setLoading(true);
         
-        // Fetch users
+
         const usersData = await apiService.getUsers();
         setUsers(usersData.users || {});
         
-        // Fetch posts
+       
         const postsData = await apiService.getPosts();
         
-        // Process posts to include comment counts
+        
         const processedPosts = await Promise.all(
           (postsData.posts || []).map(async (post) => {
-            // Fetch comments for this post
+          
             const commentsData = await apiService.getComments(post.id);
             
             return {
@@ -54,25 +54,24 @@ export const DataProvider = ({ children }) => {
     
     fetchInitialData();
     
-    // Set up polling for new posts
+
     const pollInterval = setInterval(() => {
       fetchNewPosts();
-    }, 30000); // Poll every 30 seconds
+    }, 30000); 
     
     return () => clearInterval(pollInterval);
   }, []);
   
-  // Function to fetch new posts periodically
+
   const fetchNewPosts = async () => {
     try {
       const postsData = await apiService.getPosts();
       
-      // Find new posts that aren't already in our state
       const existingPostIds = new Set(posts.map(p => p.id));
       const newPosts = (postsData.posts || []).filter(post => !existingPostIds.has(post.id));
       
       if (newPosts.length > 0) {
-        // Process new posts
+      
         const processedNewPosts = await Promise.all(
           newPosts.map(async (post) => {
             const commentsData = await apiService.getComments(post.id);
@@ -87,7 +86,7 @@ export const DataProvider = ({ children }) => {
           })
         );
         
-        // Add new posts to state
+        
         setPosts(prevPosts => [...processedNewPosts, ...prevPosts]);
       }
     } catch (err) {
@@ -95,7 +94,7 @@ export const DataProvider = ({ children }) => {
     }
   };
   
-  // Calculate top users by post count
+
   const getTopUsers = (count = 5) => {
     const userPostCounts = {};
     
@@ -115,7 +114,7 @@ export const DataProvider = ({ children }) => {
       }));
   };
   
-  // Get trending posts (posts with maximum comments)
+
   const getTrendingPosts = () => {
     if (posts.length === 0) return [];
     
@@ -123,7 +122,7 @@ export const DataProvider = ({ children }) => {
     return posts.filter(post => post.commentCount === maxComments);
   };
   
-  // Get feed posts sorted by timestamp (newest first)
+
   const getFeedPosts = () => {
     return [...posts].sort((a, b) => new Date(b.timestamp) - new Date(a.timestamp));
   };

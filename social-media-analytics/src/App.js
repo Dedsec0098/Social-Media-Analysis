@@ -1,20 +1,43 @@
 import React from 'react';
-import './App.css';
+import { BrowserRouter, Routes, Route } from 'react-router-dom';
+import { ThemeProvider, createTheme } from '@mui/material/styles';
+import CssBaseline from '@mui/material/CssBaseline';
 import { DataProvider } from './context/DataContext';
+
+// Components
+import Layout from './components/Layout';
+import TopUsers from './pages/TopUsers';
+import TrendingPosts from './pages/TrendingPosts';
+import Feed from './pages/Feed';
+
+// Create a theme
+const theme = createTheme({
+  palette: {
+    primary: {
+      main: '#1976d2',
+    },
+    secondary: {
+      main: '#dc004e',
+    },
+  },
+});
 
 function App() {
   return (
-    <DataProvider>
-      <div className="App">
-        <header className="App-header">
-          <h1>Social Media Analytics</h1>
-        </header>
-        <main>
-          {/* Your components will go here */}
-          <p>Ready to build your social media analytics dashboard!</p>
-        </main>
-      </div>
-    </DataProvider>
+    <ThemeProvider theme={theme}>
+      <CssBaseline />
+      <DataProvider>
+        <BrowserRouter>
+          <Routes>
+            <Route path="/" element={<Layout />}>
+              <Route index element={<Feed />} />
+              <Route path="top-users" element={<TopUsers />} />
+              <Route path="trending" element={<TrendingPosts />} />
+            </Route>
+          </Routes>
+        </BrowserRouter>
+      </DataProvider>
+    </ThemeProvider>
   );
 }
 
